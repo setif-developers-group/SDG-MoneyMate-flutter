@@ -7,10 +7,12 @@ final tokenStorageProvider = Provider((ref) => TokenStorage());
 class AuthState {
   final bool isAuthenticated;
   final String? token;
+  final String? errorMessage;
 
-  AuthState({required this.isAuthenticated, this.token});
+  AuthState({required this.isAuthenticated, this.token, this.errorMessage});
 
-  AuthState copyWith({bool? isAuthenticated, String? token}) => AuthState(isAuthenticated: isAuthenticated ?? this.isAuthenticated, token: token ?? this.token);
+  AuthState copyWith({bool? isAuthenticated, String? token, String? errorMessage}) =>
+      AuthState(isAuthenticated: isAuthenticated ?? this.isAuthenticated, token: token ?? this.token, errorMessage: errorMessage ?? this.errorMessage);
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -41,11 +43,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
           await ref.read(tokenStorageProvider).saveRefreshToken(resp.data['refresh'].toString());
         }
         api.setAccessToken(token);
-        state = AuthState(isAuthenticated: true, token: token);
+        state = AuthState(isAuthenticated: true, token: token, errorMessage: null);
         return true;
+      } else {
+        // try to provide a friendly message from backend if present
+        String msg = 'Invalid credentials';
+        try {
+          if (resp.data != null) {
+            if (resp.data is Map && resp.data['detail'] != null) {
+              msg = resp.data['detail'].toString();
+            } else if (resp.data is Map && resp.data['message'] != null) {
+              msg = resp.data['message'].toString();
+            }
+          }
+        } catch (_) {}
+        state = AuthState(isAuthenticated: false, token: null, errorMessage: msg);
+        return false;
       }
-    } catch (_) {}
-    return false;
+    } catch (e) {
+      final msg = e is Exception ? e.toString() : 'Network error';
+      state = AuthState(isAuthenticated: false, token: null, errorMessage: msg);
+      return false;
+    }
   }
 
   /// Attempt to refresh access token using refresh token stored in TokenStorage.
@@ -56,16 +75,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final api = ref.read(apiClientProvider);
       final resp = await api.post('/api/token/refresh/', data: {'refresh': refresh});
-      if (resp.data != null && resp.data['access'] != null) {
+        if (resp.data != null && resp.data['access'] != null) {
         final newAccess = resp.data['access'].toString();
         await storage.saveAccessToken(newAccess);
         api.setAccessToken(newAccess);
-        state = state.copyWith(isAuthenticated: true, token: newAccess);
+        state = state.copyWith(isAuthenticated: true, token: newAccess, errorMessage: null);
         return newAccess;
       }
-    } catch (_) {}
-    // failed to refresh -> logout
-    await logout();
+  } catch (_) {}
+  // failed to refresh -> logout
+  await logout();
     return null;
   }
 
@@ -73,7 +92,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final api = ref.read(apiClientProvider);
     await ref.read(tokenStorageProvider).clear();
     api.clearAccessToken();
-    state = AuthState(isAuthenticated: false, token: null);
+  state = AuthState(isAuthenticated: false, token: null, errorMessage: null);
   }
 }
 
