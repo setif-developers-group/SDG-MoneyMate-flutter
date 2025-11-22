@@ -20,12 +20,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final notifier = ref.read(authNotifierProvider.notifier);
     final success = await notifier.login(_userCtrl.text, _passCtrl.text);
     setState(() => _loading = false);
+    final state = ref.read(authNotifierProvider);
     if (success) {
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/budget');
     } else {
+      // show friendly message from AuthState if available
+      final msg = state.errorMessage ?? 'Login failed. Please check credentials and try again.';
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 
@@ -41,7 +44,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             const SizedBox(height: 8),
             TextField(controller: _passCtrl, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loading ? null : _login, child: _loading ? const CircularProgressIndicator() : const Text('Login')),
+            ElevatedButton(
+              onPressed: (_loading || _userCtrl.text.isEmpty || _passCtrl.text.isEmpty) ? null : _login,
+              child: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Login'),
+            ),
+            const SizedBox(height: 12),
+            // inline hint if fields are empty
+            if (_userCtrl.text.isEmpty || _passCtrl.text.isEmpty)
+              const Text('Please enter username and password', style: TextStyle(color: Colors.grey)),
           ],
         ),
       ),

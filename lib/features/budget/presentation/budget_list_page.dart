@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/features/budget/presentation/budget_provider.dart';
+import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
 
 class BudgetListPage extends ConsumerStatefulWidget {
   const BudgetListPage({super.key});
@@ -14,7 +15,21 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
   Widget build(BuildContext context) {
     final asyncBudgets = ref.watch(budgetsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Budgets')),
+      appBar: AppBar(
+        title: const Text('Budgets'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              // Capture Navigator synchronously to avoid using BuildContext after await.
+              final navigator = Navigator.of(context);
+              await ref.read(authNotifierProvider.notifier).logout();
+              if (!mounted) return;
+              navigator.pushReplacementNamed('/');
+            },
+          )
+        ],
+      ),
       body: asyncBudgets.when(
         data: (list) => ListView.builder(
           itemCount: list.length,

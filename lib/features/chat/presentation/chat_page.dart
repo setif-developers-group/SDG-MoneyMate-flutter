@@ -11,7 +11,7 @@ class ChatPage extends ConsumerStatefulWidget {
 
 class _ChatPageState extends ConsumerState<ChatPage> {
   final _ctrl = TextEditingController();
-  List<Map<String, String>> _msgs = [];
+  final List<Map<String, String>> _msgs = [];
 
   Future<void> _send() async {
     final text = _ctrl.text.trim();

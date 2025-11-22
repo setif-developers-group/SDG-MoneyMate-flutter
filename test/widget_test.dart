@@ -7,25 +7,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:sdg_moneymate/core/token_storage.dart';
+import 'package:sdg_moneymate/features/auth/presentation/login_page.dart';
 
-import '../lib/main.dart';
+class FakeSeenOnboardingStorage extends TokenStorage {
+  @override
+  Future<bool> hasSeenOnboarding() async => true;
+}
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  // Build LoginPage directly (avoid StartupGate timing in unit tests)
+  await tester.pumpWidget(ProviderScope(child: const MaterialApp(home: LoginPage())));
+  await tester.pump();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  // Verify that login page appears (AppBar + button)
+  expect(find.text('Login'), findsNWidgets(2));
+  expect(find.byType(TextField), findsNWidgets(2));
   });
 }
