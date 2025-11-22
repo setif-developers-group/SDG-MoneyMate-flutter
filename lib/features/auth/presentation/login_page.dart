@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sdg_moneymate/core/providers.dart';
+import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -17,25 +17,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _login() async {
     setState(() => _loading = true);
-    // Minimal stub: call auth token endpoint using ApiClient
-    try {
-      final api = ref.read(apiClientProvider);
-      final resp = await api.post('/api/token/', data: {'username': _userCtrl.text, 'password': _passCtrl.text});
-      if (resp.data != null && resp.data['access'] != null) {
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(title: const Text('Logged in'), content: Text('access: ${resp.data['access']}')),
-        );
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed')));
-      }
-    } catch (e) {
+    final notifier = ref.read(authNotifierProvider.notifier);
+    final success = await notifier.login(_userCtrl.text, _passCtrl.text);
+    setState(() => _loading = false);
+    if (success) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-    } finally {
-      setState(() => _loading = false);
+      Navigator.of(context).pushReplacementNamed('/budget');
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login failed')));
     }
   }
 

@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 
 class ApiClient {
   final Dio dio;
+  /// Optional callback that should refresh the access token and return the new token or null.
+  Future<String?> Function()? refreshTokenCallback;
 
   ApiClient._(this.dio);
 
@@ -16,7 +18,41 @@ class ApiClient {
 
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
 
-    return ApiClient._(dio);
+    final client = ApiClient._(dio);
+
+    dio.interceptors.add(InterceptorsWrapper(onError: (err, handler) async {
+      final res = err.response;
+      if (res != null && res.statusCode == 401) {
+        final refreshFn = client.refreshTokenCallback;
+        if (refreshFn != null) {
+          try {
+            final newToken = await refreshFn();
+            if (newToken != null) {
+              client.setAccessToken(newToken);
+              // retry original request
+              final opts = Options(method: err.requestOptions.method, headers: err.requestOptions.headers);
+              final retryResp = await dio.request(err.requestOptions.path, data: err.requestOptions.data, queryParameters: err.requestOptions.queryParameters, options: opts);
+              return handler.resolve(retryResp);
+            }
+          } catch (_) {
+            // fall through to original error
+          }
+        }
+      }
+      return handler.next(err);
+    }));
+
+    return client;
+  }
+
+  /// Attach an access token for Authorization header on subsequent requests.
+  void setAccessToken(String token) {
+    dio.options.headers['Authorization'] = 'Bearer $token';
+  }
+
+  /// Remove the Authorization header.
+  void clearAccessToken() {
+    dio.options.headers.remove('Authorization');
   }
 
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters, Options? options}) {
