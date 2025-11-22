@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sdg_moneymate/core/providers.dart';
+import 'package:sdg_moneymate/features/chat/presentation/chat_provider.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key});
@@ -19,9 +19,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     setState(() => _msgs.add({'role': 'user', 'msg': text}));
     _ctrl.clear();
     try {
-      final api = ref.read(apiClientProvider);
-      final resp = await api.post('/api/chat/', data: {'msg': text});
-      final reply = resp.data != null && resp.data['msg'] != null ? resp.data['msg'].toString() : 'No response';
+      final replyFuture = ref.read(sendMessageProvider(text));
+      final reply = await replyFuture;
       setState(() => _msgs.add({'role': 'model', 'msg': reply}));
     } catch (e) {
       setState(() => _msgs.add({'role': 'model', 'msg': 'Error: $e'}));
