@@ -63,4 +63,11 @@ class TokenStorage {
     if (v == null || v.isEmpty) return null;
     return int.tryParse(v);
   }
+
+  /// Clears onboarding-related stored data (prefs, seen flag, and step).
+  Future<void> clearOnboardingPrefs() async {
+    await _storage.delete(key: _onboardingPrefsKey);
+    await _storage.delete(key: _seenOnboardingKey);
+    await _storage.delete(key: _onboardingStepKey);
+  }
 }

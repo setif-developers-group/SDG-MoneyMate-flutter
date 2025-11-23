@@ -29,10 +29,7 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
                 navigator.pushReplacementNamed(Routes.home);
               } else if (v == 'restart_onboarding') {
                 final storage = ref.read(core_providers.tokenStorageProvider);
-                await storage.saveOnboardingPrefs({});
-                await storage.setSeenOnboarding();
-                // clear seen and step so onboarding will run again
-                await storage.saveOnboardingStep(0);
+                await storage.clearOnboardingPrefs();
                 if (!mounted) return;
                 navigator.pushReplacementNamed(Routes.onboarding);
               }
