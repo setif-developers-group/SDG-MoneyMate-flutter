@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/core/providers.dart';
+import 'package:sdg_moneymate/core/routes.dart';
 
 class OnboardingPage extends ConsumerWidget {
   const OnboardingPage({super.key});
@@ -22,7 +23,7 @@ class OnboardingPage extends ConsumerWidget {
                 final navigator = Navigator.of(context);
                 await storage.setSeenOnboarding();
                 if (!navigator.mounted) return;
-                navigator.pushReplacementNamed('/');
+                navigator.pushReplacementNamed(Routes.home);
               },
               child: const Text('Get started'))
         ]),
