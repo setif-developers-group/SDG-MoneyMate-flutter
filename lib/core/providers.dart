@@ -12,3 +12,8 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 });
 
 final tokenStorageProvider = Provider((ref) => TokenStorage());
+
+final onboardingPrefsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+	final storage = ref.read(tokenStorageProvider);
+	return await storage.readOnboardingPrefs();
+});

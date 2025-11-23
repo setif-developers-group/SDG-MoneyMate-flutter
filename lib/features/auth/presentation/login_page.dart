@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
+import 'package:sdg_moneymate/core/routes.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -22,8 +23,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _loading = false);
     final state = ref.read(authNotifierProvider);
     if (success) {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/budget');
+  if (!mounted) return;
+  Navigator.of(context).pushReplacementNamed(Routes.budget);
     } else {
       // show friendly message from AuthState if available
       final msg = state.errorMessage ?? 'Login failed. Please check credentials and try again.';
