@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'SDG MoneyMate',
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       initialRoute: Routes.splash,

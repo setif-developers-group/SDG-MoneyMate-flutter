@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/features/budget/presentation/budget_provider.dart';
-import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
 import 'package:sdg_moneymate/core/routes.dart';
-import 'package:sdg_moneymate/core/providers.dart' as core_providers;
+import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
+import 'package:sdg_moneymate/core/route_helpers.dart';
 
 class BudgetListPage extends ConsumerStatefulWidget {
   const BudgetListPage({super.key});
@@ -25,17 +25,13 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
               final navigator = Navigator.of(context);
               if (v == 'logout') {
                 await ref.read(authNotifierProvider.notifier).logout();
-                if (!mounted) return;
-                navigator.pushReplacementNamed(Routes.home);
-              } else if (v == 'restart_onboarding') {
-                final storage = ref.read(core_providers.tokenStorageProvider);
-                await storage.clearOnboardingPrefs();
-                if (!mounted) return;
-                navigator.pushReplacementNamed(Routes.onboarding);
+                if (mounted) navigator.pushReplacementNamed(Routes.home);
+              } else if (v == 'settings') {
+                if (mounted) RouteHelpers.pushSettings(context);
               }
             },
             itemBuilder: (_) => const [
-              PopupMenuItem(value: 'restart_onboarding', child: Text('Restart Onboarding')),
+              PopupMenuItem(value: 'settings', child: Text('Settings')),
               PopupMenuItem(value: 'logout', child: Text('Logout')),
             ],
           )

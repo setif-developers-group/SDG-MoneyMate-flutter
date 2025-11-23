@@ -7,7 +7,8 @@ import 'package:sdg_moneymate/features/expenses/presentation/expenses_page.dart'
 import 'package:sdg_moneymate/features/advisor/presentation/advisor_page.dart';
 import 'package:sdg_moneymate/features/onboarding/presentation/onboarding_flow.dart';
 import 'package:sdg_moneymate/core/auth_gate.dart';
-import 'package:sdg_moneymate/core/startup_gate.dart';
+import 'package:sdg_moneymate/features/settings/presentation/settings_page.dart';
+import 'package:sdg_moneymate/features/home/presentation/home_page.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -16,6 +17,7 @@ class Routes {
   static const chat = '/chat';
   static const expenses = '/expenses';
   static const advisor = '/advisor';
+  static const settings = '/settings';
   static const onboarding = '/onboarding';
   static const login = '/login';
 }
@@ -26,7 +28,8 @@ class RouteGenerator {
       case Routes.splash:
         return MaterialPageRoute(builder: (_) => const SplashPage());
       case Routes.home:
-        return MaterialPageRoute(builder: (_) => StartupGate(child: const LoginPage()));
+        return MaterialPageRoute(
+            builder: (_) => AuthGate(authenticated: const HomePage(), unauthenticated: const LoginPage()));
       case Routes.budget:
         return MaterialPageRoute(
             builder: (_) => AuthGate(authenticated: const BudgetListPage(), unauthenticated: const LoginPage()));
@@ -39,6 +42,8 @@ class RouteGenerator {
       case Routes.advisor:
         return MaterialPageRoute(
             builder: (_) => AuthGate(authenticated: const AdvisorPage(), unauthenticated: const LoginPage()));
+      case Routes.settings:
+        return MaterialPageRoute(builder: (_) => AuthGate(authenticated: const SettingsPage(), unauthenticated: const LoginPage()));
       case Routes.onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingFlow());
       case Routes.login:
