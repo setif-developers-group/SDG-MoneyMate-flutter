@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:sdg_moneymate/core/routes.dart';
+import 'package:go_router/go_router.dart';
 
 class RouteHelpers {
-  static void goHome(BuildContext context) => Navigator.of(context).pushReplacementNamed(Routes.home);
-  static void pushBudget(BuildContext context) => Navigator.of(context).pushNamed(Routes.budget);
-  static void pushChat(BuildContext context) => Navigator.of(context).pushNamed(Routes.chat);
-  static void pushExpenses(BuildContext context) => Navigator.of(context).pushNamed(Routes.expenses);
-  static void pushAdvisor(BuildContext context) => Navigator.of(context).pushNamed(Routes.advisor);
-  static void pushSettings(BuildContext context) => Navigator.of(context).pushNamed(Routes.settings);
-  static void pushOnboarding(BuildContext context) => Navigator.of(context).pushReplacementNamed(Routes.onboarding);
+  static void goHome(BuildContext context) => context.go('/');
+  static void pushBudget(BuildContext context) => context.push('/budget');
+  static void pushChat(BuildContext context) => context.push('/chat');
+  static void pushExpenses(BuildContext context) => context.push('/expenses');
+  static void pushAdvisor(BuildContext context) => context.push('/advisor');
+  static void pushSettings(BuildContext context) => context.push('/settings');
+  static void pushOnboarding(BuildContext context) => context.go('/onboarding');
 }

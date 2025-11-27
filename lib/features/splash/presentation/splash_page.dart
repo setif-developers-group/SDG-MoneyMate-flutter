@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:sdg_moneymate/core/routes.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(const Duration(milliseconds: 1500), () {
-      if (mounted) Navigator.of(context).pushReplacementNamed(Routes.home);
+      if (mounted) context.go('/');
     });
   }
 
@@ -26,9 +26,16 @@ class _SplashPageState extends State<SplashPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: const [
-            Icon(Icons.account_balance_wallet, size: 72, color: Colors.deepPurple),
+            Icon(
+              Icons.account_balance_wallet,
+              size: 72,
+              color: Colors.deepPurple,
+            ),
             SizedBox(height: 12),
-            Text('SDG MoneyMate', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'SDG MoneyMate',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
       ),

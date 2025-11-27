@@ -1,4 +1,4 @@
-package com.example.sdg_moneymate
+package com.example.sdg_money_mate
 
 import io.flutter.embedding.android.FlutterActivity
 

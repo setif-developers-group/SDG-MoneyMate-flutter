@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/features/budget/presentation/budget_provider.dart';
-import 'package:sdg_moneymate/core/routes.dart';
 import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
 import 'package:sdg_moneymate/core/route_helpers.dart';
 
@@ -22,10 +21,8 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
         actions: [
           PopupMenuButton<String>(
             onSelected: (v) async {
-              final navigator = Navigator.of(context);
               if (v == 'logout') {
                 await ref.read(authNotifierProvider.notifier).logout();
-                if (mounted) navigator.pushReplacementNamed(Routes.home);
               } else if (v == 'settings') {
                 if (mounted) RouteHelpers.pushSettings(context);
               }
@@ -34,7 +31,7 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
               PopupMenuItem(value: 'settings', child: Text('Settings')),
               PopupMenuItem(value: 'logout', child: Text('Logout')),
             ],
-          )
+          ),
         ],
       ),
       body: asyncBudgets.when(
@@ -42,7 +39,10 @@ class _BudgetListPageState extends ConsumerState<BudgetListPage> {
           itemCount: list.length,
           itemBuilder: (context, i) {
             final b = list[i];
-            return ListTile(title: Text(b['title'] ?? 'Untitled'), subtitle: Text('Budget: ${b['budget'] ?? ''}'));
+            return ListTile(
+              title: Text(b['title'] ?? 'Untitled'),
+              subtitle: Text('Budget: ${b['budget'] ?? ''}'),
+            );
           },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),

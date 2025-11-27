@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sdg_moneymate/features/auth/presentation/auth_notifier.dart';
-import 'package:sdg_moneymate/core/routes.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -23,11 +22,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _loading = false);
     final state = ref.read(authNotifierProvider);
     if (success) {
-  if (!mounted) return;
-  Navigator.of(context).pushReplacementNamed(Routes.budget);
+      // Navigation is handled by the router listening to auth state changes
     } else {
       // show friendly message from AuthState if available
-      final msg = state.errorMessage ?? 'Login failed. Please check credentials and try again.';
+      final msg =
+          state.errorMessage ??
+          'Login failed. Please check credentials and try again.';
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
@@ -41,18 +41,37 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: _userCtrl, decoration: const InputDecoration(labelText: 'Username')),
+            TextField(
+              controller: _userCtrl,
+              decoration: const InputDecoration(labelText: 'Username'),
+            ),
             const SizedBox(height: 8),
-            TextField(controller: _passCtrl, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+            TextField(
+              controller: _passCtrl,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: (_loading || _userCtrl.text.isEmpty || _passCtrl.text.isEmpty) ? null : _login,
-              child: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Login'),
+              onPressed:
+                  (_loading || _userCtrl.text.isEmpty || _passCtrl.text.isEmpty)
+                  ? null
+                  : _login,
+              child: _loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Login'),
             ),
             const SizedBox(height: 12),
             // inline hint if fields are empty
             if (_userCtrl.text.isEmpty || _passCtrl.text.isEmpty)
-              const Text('Please enter username and password', style: TextStyle(color: Colors.grey)),
+              const Text(
+                'Please enter username and password',
+                style: TextStyle(color: Colors.grey),
+              ),
           ],
         ),
       ),
