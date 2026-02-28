@@ -249,4 +249,23 @@ DerivedData/
 GoogleService-Info.plist
 google-services.json
 # Plugins (already resolved through pubspec.yaml)
+.flutter-plugins# Flutter/Dart
+build/
+.dart_tool/
 .flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.g.dart
+*.freezed.dart
+
+# Android
+android/.gradle
+android/local.properties
+android/key.properties
+*.jks
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
